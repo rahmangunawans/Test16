@@ -1,0 +1,169 @@
+{% extends "admin/base.html" %}
+
+{% block page_title %}User Management{% endblock %}
+
+{% block title %}User Management - Admin - AniFlix{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-900 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center mb-4">
+                <a href="{{ url_for('admin.admin_dashboard') }}" class="text-red-500 hover:text-red-400 mr-4">
+                    <i class="fas fa-arrow-left text-lg"></i>
+                </a>
+                <h1 class="text-3xl font-bold text-white">User Management</h1>
+            </div>
+            <p class="text-gray-400">Manage user accounts and permissions</p>
+        </div>
+
+        <!-- Search -->
+        <div class="mb-6">
+            <form method="GET" class="flex gap-4">
+                <input type="text" name="search" value="{{ search }}" placeholder="Search users..." 
+                       class="flex-1 px-4 py-2 bg-gray-800 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500">
+                <button type="submit" class="bg-red-600 text-white px-6 py-2 rounded-lg hover:bg-red-700">
+                    <i class="fas fa-search mr-2"></i>Search
+                </button>
+                {% if search %}
+                <a href="{{ url_for('admin.admin_users') }}" class="bg-gray-600 text-white px-4 py-2 rounded-lg hover:bg-gray-700">
+                    Clear
+                </a>
+                {% endif %}
+            </form>
+        </div>
+
+        <!-- Users Table -->
+        <div class="bg-gray-800 rounded-lg overflow-hidden">
+            <table class="w-full">
+                <thead class="bg-gray-700">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">User</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Subscription</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Devices</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Joined</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Role</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-700">
+                    {% for user in users.items %}
+                    <tr class="hover:bg-gray-700">
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <div>
+                                <div class="text-sm font-medium text-white">{{ user.email }}</div>
+                                {% if user.username %}
+                                <div class="text-sm text-gray-400">@{{ user.username }}</div>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            <span class="px-2 py-1 text-xs rounded-full 
+                                {% if user.subscription_type == 'free' %}bg-gray-600 text-gray-200
+                                {% else %}bg-green-600 text-green-200{% endif %}">
+                                {{ user.subscription_type|title }}
+                            </span>
+                            {% if user.subscription_expires %}
+                            <div class="text-xs text-gray-400 mt-1">
+                                Expires: {{ user.subscription_expires.strftime('%Y-%m-%d') }}
+                            </div>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if user.is_vip() %}
+                                <span class="inline-flex items-center">
+                                    <span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>
+                                    <span class="text-sm text-green-400">VIP Active</span>
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center">
+                                    <span class="w-2 h-2 bg-gray-400 rounded-full mr-2"></span>
+                                    <span class="text-sm text-gray-400">Free User</span>
+                                </span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-white">
+                            {{ user.devices_count }}/{{ user.max_devices }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
+                            {{ user.created_at.strftime('%Y-%m-%d') }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if user.is_admin() %}
+                                <span class="px-2 py-1 text-xs rounded-full bg-red-600 text-red-200">Admin</span>
+                            {% else %}
+                                <span class="px-2 py-1 text-xs rounded-full bg-blue-600 text-blue-200">User</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                            <div class="flex space-x-2">
+                                <a href="{{ url_for('admin.edit_user', user_id=user.id) }}" 
+                                   class="text-blue-400 hover:text-blue-300" title="Edit User">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form method="POST" action="{{ url_for('admin.toggle_admin', user_id=user.id) }}" class="inline">
+                                    <button type="submit" 
+                                            class="{% if user.is_admin() %}text-orange-400 hover:text-orange-300{% else %}text-green-400 hover:text-green-300{% endif %}"
+                                            onclick="return confirm('Are you sure you want to {% if user.is_admin() %}revoke{% else %}grant{% endif %} admin privileges for {{ user.email }}?')"
+                                            title="{% if user.is_admin() %}Revoke Admin{% else %}Make Admin{% endif %}">
+                                        <i class="fas fa-{% if user.is_admin() %}user-minus{% else %}user-plus{% endif %}"></i>
+                                    </button>
+                                </form>
+                                {% if user.id != current_user.id %}
+                                <form method="POST" action="{{ url_for('admin.delete_user', user_id=user.id) }}" class="inline">
+                                    <button type="submit" 
+                                            class="text-red-400 hover:text-red-300"
+                                            onclick="return confirm('Are you sure you want to delete user {{ user.email }}? This action cannot be undone.')"
+                                            title="Delete User">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if users.pages > 1 %}
+        <div class="mt-6 flex justify-center">
+            <nav class="flex space-x-2">
+                {% if users.has_prev %}
+                <a href="{{ url_for('admin.admin_users', page=users.prev_num, search=search) }}" 
+                   class="px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-sm text-gray-300 hover:bg-gray-700">
+                    Previous
+                </a>
+                {% endif %}
+                
+                {% for page_num in users.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num != users.page %}
+                        <a href="{{ url_for('admin.admin_users', page=page_num, search=search) }}" 
+                           class="px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-sm text-gray-300 hover:bg-gray-700">
+                            {{ page_num }}
+                        </a>
+                        {% else %}
+                        <span class="px-3 py-2 bg-red-600 text-white rounded-md text-sm">{{ page_num }}</span>
+                        {% endif %}
+                    {% else %}
+                    <span class="px-3 py-2 text-gray-500">...</span>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if users.has_next %}
+                <a href="{{ url_for('admin.admin_users', page=users.next_num, search=search) }}" 
+                   class="px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-sm text-gray-300 hover:bg-gray-700">
+                    Next
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

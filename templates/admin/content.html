@@ -1,0 +1,162 @@
+{% extends "responsive_base.html" %}
+
+{% block title %}Manage Content - Admin - AniFlix{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-900 py-8">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center mb-4">
+                <a href="{{ url_for('admin.admin_dashboard') }}" class="text-red-500 hover:text-red-400 mr-4">
+                    <i class="fas fa-arrow-left text-lg"></i>
+                </a>
+                <h1 class="text-3xl font-bold text-white">Manage Content</h1>
+            </div>
+            <p class="text-gray-400">Manage existing anime series and movies</p>
+        </div>
+
+        <!-- Content Table -->
+        <div class="bg-gray-800 rounded-lg overflow-hidden">
+            <div class="px-6 py-4 border-b border-gray-700">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-xl font-semibold text-white">All Content ({{ content.total }})</h2>
+                    <a href="{{ url_for('admin.add_content') }}" 
+                       class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm">
+                        <i class="fas fa-plus mr-2"></i>Add New Content
+                    </a>
+                </div>
+            </div>
+            
+            {% if content.items %}
+            <div class="overflow-x-auto">
+                <table class="w-full">
+                    <thead class="bg-gray-700">
+                        <tr>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Content</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Genre</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Rating</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Type</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Episodes</th>
+                            <th class="px-6 py-3 text-left text-xs font-medium text-gray-300 uppercase tracking-wider">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-700">
+                        {% for item in content.items %}
+                        <tr class="hover:bg-gray-700">
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0 h-16 w-12">
+                                        <img class="h-16 w-12 rounded object-cover" 
+                                             src="{{ item.thumbnail_url or 'https://via.placeholder.com/100x150/16213e/ffffff?text=' + item.title[:1] }}" 
+                                             alt="{{ item.title }}">
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-white">{{ item.title }}</div>
+                                        <div class="text-sm text-gray-400">{{ item.year or 'N/A' }}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if item.genre %}
+                                    {% for genre in item.genre.split(',')[:2] %}
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-600 text-gray-200 mr-1">
+                                        {{ genre.strip() }}
+                                    </span>
+                                    {% endfor %}
+                                {% else %}
+                                    <span class="text-gray-500">-</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <div class="flex items-center">
+                                    <i class="fas fa-star text-yellow-400 mr-1"></i>
+                                    <span class="text-white">{{ "%.1f"|format(item.rating) }}</span>
+                                </div>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <span class="px-2 py-1 text-xs rounded-full bg-blue-600 text-blue-200">
+                                    {{ item.content_type|title }}
+                                </span>
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-white">
+                                {{ item.episodes|length if item.episodes else 0 }}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                <div class="flex space-x-2">
+                                    <a href="{{ url_for('admin.manage_episodes', content_id=item.id) }}" 
+                                       class="text-purple-400 hover:text-purple-300" title="Manage Episodes">
+                                        <i class="fas fa-list"></i>
+                                    </a>
+                                    <a href="{{ url_for('admin.edit_content', content_id=item.id) }}" 
+                                       class="text-yellow-400 hover:text-yellow-300" title="Edit">
+                                        <i class="fas fa-edit"></i>
+                                    </a>
+                                    <a href="{{ url_for('content.anime_detail', content_id=item.id) }}" 
+                                       class="text-green-400 hover:text-green-300" title="Preview">
+                                        <i class="fas fa-eye"></i>
+                                    </a>
+                                    <form method="POST" action="{{ url_for('admin.delete_content', content_id=item.id) }}" 
+                                          class="inline" onsubmit="return confirm('Are you sure you want to delete this content?')">
+                                        <button type="submit" class="text-red-400 hover:text-red-300" title="Delete">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="text-center py-12">
+                <div class="text-gray-400 text-6xl mb-4">📺</div>
+                <h3 class="text-xl font-medium text-white mb-2">No Content Yet</h3>
+                <p class="text-gray-400 mb-6">Start by adding your first anime or movie.</p>
+                <a href="{{ url_for('admin.add_content') }}" 
+                   class="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg font-medium">
+                    Add First Content
+                </a>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Pagination -->
+        {% if content.pages > 1 %}
+        <div class="mt-6 flex justify-center">
+            <nav class="flex space-x-2">
+                {% if content.has_prev %}
+                <a href="{{ url_for('admin.admin_content', page=content.prev_num, search=search) }}" 
+                   class="px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-sm text-gray-300 hover:bg-gray-700">
+                    Previous
+                </a>
+                {% endif %}
+                
+                {% for page_num in content.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num != content.page %}
+                        <a href="{{ url_for('admin.admin_content', page=page_num, search=search) }}" 
+                           class="px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-sm text-gray-300 hover:bg-gray-700">
+                            {{ page_num }}
+                        </a>
+                        {% else %}
+                        <span class="px-3 py-2 bg-red-600 text-white rounded-md text-sm">{{ page_num }}</span>
+                        {% endif %}
+                    {% else %}
+                    <span class="px-3 py-2 text-gray-500">...</span>
+                    {% endif %}
+                {% endfor %}
+                
+                {% if content.has_next %}
+                <a href="{{ url_for('admin.admin_content', page=content.next_num, search=search) }}" 
+                   class="px-3 py-2 bg-gray-800 border border-gray-600 rounded-md text-sm text-gray-300 hover:bg-gray-700">
+                    Next
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

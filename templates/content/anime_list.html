@@ -1,0 +1,149 @@
+{% extends "responsive_base.html" %}
+
+{% block title %}Anime List - AniFlix{% endblock %}
+
+{% block content %}
+<div class="min-h-screen">
+    <!-- Hero Section -->
+    <div class="bg-gradient-to-b from-gray-900 to-gray-800 py-8 sm:py-12 lg:py-16">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center">
+                <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-4">
+                    Discover Amazing <span class="text-red-500">Anime</span>
+                </h1>
+                <p class="text-lg sm:text-xl text-gray-300 mb-8">
+                    Stream thousands of anime series in HD quality
+                </p>
+                
+                <!-- Search Bar -->
+                <div class="max-w-md mx-auto">
+                    <form method="GET" action="{{ url_for('content.search') }}" class="relative">
+                        <input type="text" 
+                               name="q" 
+                               value="{{ request.args.get('q', '') }}"
+                               placeholder="Search anime..." 
+                               class="w-full px-4 py-3 pl-12 bg-gray-800 text-white rounded-lg border border-gray-700 focus:border-red-500 focus:outline-none">
+                        <i class="fas fa-search absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
+                        <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded">
+                            Search
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <!-- Filters -->
+        <div class="mb-8">
+            <div class="flex flex-wrap gap-4 items-center justify-between">
+                <div class="flex flex-wrap gap-2">
+                    <button class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm">All</button>
+                    <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm">Action</button>
+                    <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm">Romance</button>
+                    <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm">Comedy</button>
+                    <button class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg text-sm">Drama</button>
+                </div>
+                <div class="flex items-center gap-2">
+                    <label class="text-gray-300 text-sm">Sort by:</label>
+                    <select class="bg-gray-800 text-white px-3 py-2 rounded text-sm border border-gray-700">
+                        <option>Latest</option>
+                        <option>Popular</option>
+                        <option>Rating</option>
+                        <option>A-Z</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Anime Grid -->
+        {% if content_list %}
+        <div class="responsive-grid">
+            {% for content in content_list %}
+            <div class="bg-gray-800 rounded-lg overflow-hidden hover:transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl">
+                <div class="relative">
+                    <img src="{{ content.thumbnail_url or '/static/images/placeholder.jpg' }}" 
+                         alt="{{ content.title }}" 
+                         class="w-full h-48 sm:h-64 object-cover">
+                    
+                    <!-- Rating Badge -->
+                    {% if content.rating %}
+                    <div class="absolute top-2 right-2 bg-yellow-600 text-white px-2 py-1 rounded text-xs font-semibold flex items-center">
+                        <i class="fas fa-star mr-1"></i>{{ "%.1f"|format(content.rating) }}
+                    </div>
+                    {% endif %}
+                    
+                    <!-- Play and Trailer Buttons Overlay -->
+                    <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-70 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100">
+                        <div class="flex space-x-3">
+                            <a href="{{ url_for('content.anime_detail', content_id=content.id) }}"
+                               class="bg-red-600 hover:bg-red-700 text-white rounded-full p-3 transition-all">
+                                <i class="fas fa-play"></i>
+                            </a>
+                            {% if content.trailer_url %}
+                            <button onclick="openTrailerModal('{{ content.trailer_url }}')"
+                               class="bg-gray-600 hover:bg-gray-700 text-white rounded-full p-3 transition-all">
+                                <i class="fas fa-video"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                    
+                    <div class="p-4">
+                        <h3 class="text-white font-semibold text-sm sm:text-base mb-2 line-clamp-2">{{ content.title }}</h3>
+                        <div class="flex items-center justify-between text-xs text-gray-400">
+                            <span>{{ content.year or 'N/A' }}</span>
+                            {% if content.genre %}
+                            <span class="bg-gray-700 px-2 py-1 rounded">{{ content.genre }}</span>
+                            {% endif %}
+                        </div>
+                        {% if content.description %}
+                        <p class="text-gray-400 text-xs mt-2 line-clamp-2">{{ content.description }}</p>
+                        {% endif %}
+                    </div>
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        <div class="mt-12 flex justify-center">
+            <div class="flex items-center space-x-2">
+                <button class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded text-sm">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="bg-red-600 text-white px-3 py-2 rounded text-sm">1</button>
+                <button class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded text-sm">2</button>
+                <button class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded text-sm">3</button>
+                <button class="bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded text-sm">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <!-- Empty State -->
+        <div class="text-center py-16">
+            <i class="fas fa-film text-gray-600 text-6xl mb-4"></i>
+            <h3 class="text-xl font-semibold text-white mb-2">No anime found</h3>
+            <p class="text-gray-400">Try adjusting your search or browse all content</p>
+            <a href="{{ url_for('content.anime_list') }}" class="inline-block mt-4 bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-lg">
+                Browse All Anime
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<style>
+    .line-clamp-2 {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+</style>
+{% endblock %}

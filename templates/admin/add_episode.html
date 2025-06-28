@@ -1,0 +1,97 @@
+{% extends "admin/base.html" %}
+
+{% block content %}
+<div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">Add Episode</h1>
+    <p class="text-gray-600">Add new episode to "{{ content.title }}"</p>
+</div>
+
+<div class="bg-white rounded-lg shadow-md p-6">
+    <form method="POST" class="space-y-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+                <label for="episode_number" class="block text-sm font-medium text-gray-700 mb-2">Episode Number *</label>
+                <input type="number" id="episode_number" name="episode_number" min="1" required 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+            
+            <div>
+                <label for="duration" class="block text-sm font-medium text-gray-700 mb-2">Duration (minutes) *</label>
+                <input type="number" id="duration" name="duration" min="1" required 
+                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            </div>
+        </div>
+        
+        <div>
+            <label for="title" class="block text-sm font-medium text-gray-700 mb-2">Episode Title *</label>
+            <input type="text" id="title" name="title" required 
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+        </div>
+        
+        <div>
+            <label for="description" class="block text-sm font-medium text-gray-700 mb-2">Episode Description</label>
+            <textarea id="description" name="description" rows="3" 
+                      class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500"></textarea>
+        </div>
+        
+        <div>
+            <label for="video_url" class="block text-sm font-medium text-gray-700 mb-2">Video URL *</label>
+            <input type="url" id="video_url" name="video_url" required 
+                   placeholder="https://example.com/video.mp4"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <p class="text-xs text-gray-500 mt-1">Provide a direct link to the video file (MP4, WebM, etc.)</p>
+        </div>
+        
+        <div>
+            <label for="thumbnail_url" class="block text-sm font-medium text-gray-700 mb-2">Episode Thumbnail URL</label>
+            <input type="url" id="thumbnail_url" name="thumbnail_url" 
+                   placeholder="https://example.com/thumbnail.jpg"
+                   class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <p class="text-xs text-gray-500 mt-1">Optional: Thumbnail image for this specific episode</p>
+        </div>
+        
+        <div class="flex space-x-4">
+            <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700">
+                <i class="fas fa-save mr-2"></i>Add Episode
+            </button>
+            <a href="{{ url_for('admin.manage_episodes', content_id=content.id) }}" class="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Episodes
+            </a>
+        </div>
+    </form>
+</div>
+
+<!-- Content Info -->
+<div class="mt-8 bg-gray-50 rounded-lg p-6">
+    <h3 class="text-lg font-semibold text-gray-900 mb-4">Adding Episode to:</h3>
+    <div class="flex items-center space-x-4">
+        <img src="{{ content.thumbnail_url }}" alt="{{ content.title }}" class="w-16 h-24 object-cover rounded">
+        <div>
+            <h4 class="text-lg font-semibold text-gray-900">{{ content.title }}</h4>
+            <p class="text-gray-600">{{ content.genre }} • {{ content.year }}</p>
+            <p class="text-gray-500 text-sm">Current episodes: {{ content.episodes|length }}</p>
+        </div>
+    </div>
+</div>
+
+<!-- Sample Video URLs Help -->
+<div class="mt-8 bg-blue-50 border border-blue-200 rounded-lg p-6">
+    <div class="flex items-start">
+        <div class="flex-shrink-0">
+            <i class="fas fa-info-circle text-blue-500 text-xl"></i>
+        </div>
+        <div class="ml-3">
+            <h3 class="text-lg font-medium text-blue-900">Sample Video URLs for Testing</h3>
+            <div class="mt-2 text-sm text-blue-700">
+                <p>You can use these sample video URLs for testing:</p>
+                <ul class="mt-2 list-disc list-inside space-y-1 font-mono text-xs">
+                    <li>https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4</li>
+                    <li>https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4</li>
+                    <li>https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4</li>
+                    <li>https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

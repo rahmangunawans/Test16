@@ -1,0 +1,85 @@
+{% extends "responsive_base.html" %}
+
+{% block title %}{% if episode %}Edit Episode{% else %}Add Episode{% endif %} - {{ content.title }}{% endblock %}
+
+{% block content %}
+<div class="min-h-screen bg-gray-900 py-8">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <div class="flex items-center mb-4">
+                <a href="{{ url_for('admin.manage_episodes', content_id=content.id) }}" class="text-red-500 hover:text-red-400 mr-4">
+                    <i class="fas fa-arrow-left text-lg"></i>
+                </a>
+                <h1 class="text-3xl font-bold text-white">
+                    {% if episode %}Edit Episode{% else %}Add Episode{% endif %}
+                </h1>
+            </div>
+            <p class="text-gray-400">{{ content.title }}</p>
+        </div>
+
+        <!-- Form -->
+        <div class="bg-gray-800 rounded-lg p-6">
+            <form method="POST" class="space-y-6">
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Episode Number</label>
+                        <input type="number" name="episode_number" 
+                               value="{{ episode.episode_number if episode else '' }}"
+                               class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500"
+                               required>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-sm font-medium text-gray-300 mb-2">Duration (minutes)</label>
+                        <input type="number" name="duration" 
+                               value="{{ episode.duration if episode else '' }}"
+                               class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500">
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Episode Title</label>
+                    <input type="text" name="title" 
+                           value="{{ episode.title if episode else '' }}"
+                           class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Video URL</label>
+                    <input type="url" name="video_url" 
+                           value="{{ episode.video_url if episode else '' }}"
+                           class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500"
+                           placeholder="https://example.com/video.mp4">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Thumbnail URL</label>
+                    <input type="url" name="thumbnail_url" 
+                           value="{{ episode.thumbnail_url if episode else '' }}"
+                           class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500"
+                           placeholder="https://example.com/thumbnail.jpg">
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-300 mb-2">Description</label>
+                    <textarea name="description" rows="4"
+                              class="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:border-red-500"
+                              placeholder="Episode description...">{{ episode.description if episode else '' }}</textarea>
+                </div>
+
+                <div class="flex space-x-4 pt-6">
+                    <button type="submit" 
+                            class="flex-1 bg-red-600 hover:bg-red-700 text-white py-3 px-6 rounded-lg font-medium">
+                        {% if episode %}Update Episode{% else %}Add Episode{% endif %}
+                    </button>
+                    <a href="{{ url_for('admin.manage_episodes', content_id=content.id) }}" 
+                       class="flex-1 bg-gray-600 hover:bg-gray-700 text-white py-3 px-6 rounded-lg font-medium text-center">
+                        Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

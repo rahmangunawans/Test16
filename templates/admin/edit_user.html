@@ -1,0 +1,144 @@
+{% extends "responsive_base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto px-4 py-8">
+    <div class="mb-6">
+        <div class="flex items-center justify-between">
+            <h1 class="text-3xl font-bold text-white">Edit User: {{ user.username }}</h1>
+            <a href="{{ url_for('admin.admin_users') }}" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-lg transition-colors">
+                <i class="fas fa-arrow-left mr-2"></i>Back to Users
+            </a>
+        </div>
+    </div>
+
+    <div class="bg-gray-800 rounded-lg p-6">
+        <form method="POST" class="space-y-6">
+            <!-- Basic Information -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                    <input type="text" id="username" name="username" value="{{ user.username }}" required
+                           class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 border border-gray-600 focus:border-red-500 focus:ring-1 focus:ring-red-500">
+                </div>
+                
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Email</label>
+                    <input type="email" id="email" name="email" value="{{ user.email }}" required
+                           class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 border border-gray-600 focus:border-red-500 focus:ring-1 focus:ring-red-500">
+                </div>
+            </div>
+
+            <!-- VIP Settings -->
+            <div class="border-t border-gray-700 pt-6">
+                <h3 class="text-lg font-semibold text-white mb-4">VIP Settings</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="subscription_type" class="block text-sm font-medium text-gray-300 mb-2">Subscription Type</label>
+                        <select id="subscription_type" name="subscription_type"
+                                class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 border border-gray-600 focus:border-red-500 focus:ring-1 focus:ring-red-500">
+                            <option value="free" {% if user.subscription_type == 'free' %}selected{% endif %}>Free</option>
+                            <option value="vip_monthly" {% if user.subscription_type == 'vip_monthly' %}selected{% endif %}>VIP Monthly</option>
+                            <option value="vip_3month" {% if user.subscription_type == 'vip_3month' %}selected{% endif %}>VIP 3 Months</option>
+                            <option value="vip_yearly" {% if user.subscription_type == 'vip_yearly' %}selected{% endif %}>VIP Yearly</option>
+                        </select>
+                    </div>
+                    
+
+                </div>
+                
+                <div class="mt-4">
+                    <label for="subscription_expires" class="block text-sm font-medium text-gray-300 mb-2">VIP Expiry Date</label>
+                    <input type="date" id="subscription_expires" name="subscription_expires" 
+                           value="{{ user.subscription_expires.strftime('%Y-%m-%d') if user.subscription_expires else '' }}"
+                           class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 border border-gray-600 focus:border-red-500 focus:ring-1 focus:ring-red-500">
+                    <p class="text-gray-400 text-sm mt-1">Leave empty for free accounts or permanent VIP</p>
+                </div>
+            </div>
+
+            <!-- Security -->
+            <div class="border-t border-gray-700 pt-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Security</h3>
+                
+                <div>
+                    <label for="new_password" class="block text-sm font-medium text-gray-300 mb-2">New Password</label>
+                    <input type="password" id="new_password" name="new_password" placeholder="Leave empty to keep current password"
+                           class="w-full bg-gray-700 text-white rounded-lg px-4 py-2 border border-gray-600 focus:border-red-500 focus:ring-1 focus:ring-red-500">
+                    <p class="text-gray-400 text-sm mt-1">Only fill this field if you want to change the password</p>
+                </div>
+            </div>
+
+            <!-- Current Stats -->
+            <div class="border-t border-gray-700 pt-6">
+                <h3 class="text-lg font-semibold text-white mb-4">Current Statistics</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <p class="text-gray-300 text-sm">Episodes Watched</p>
+                        <p class="text-white text-xl font-semibold">{{ user.watch_history|length }}</p>
+                    </div>
+                    
+
+                    
+                    <div class="bg-gray-700 p-4 rounded-lg">
+                        <p class="text-gray-300 text-sm">Account Created</p>
+                        <p class="text-white text-xl font-semibold">{{ user.created_at.strftime('%Y-%m-%d') if user.created_at else 'N/A' }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex justify-between pt-6">
+                <button type="button" onclick="confirmDelete({{ user.id }})" 
+                        class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg transition-colors"
+                        {% if user.id == current_user.id %}disabled title="Cannot delete your own account"{% endif %}>
+                    <i class="fas fa-trash mr-2"></i>Delete User
+                </button>
+                
+                <div class="space-x-4">
+                    <a href="{{ url_for('admin.admin_users') }}" 
+                       class="bg-gray-600 hover:bg-gray-700 text-white px-6 py-2 rounded-lg transition-colors">
+                        Cancel
+                    </a>
+                    <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg transition-colors">
+                        <i class="fas fa-save mr-2"></i>Save Changes
+                    </button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div id="delete-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden items-center justify-center">
+    <div class="bg-gray-800 p-6 rounded-lg max-w-md w-full mx-4">
+        <h3 class="text-lg font-semibold text-white mb-4">Confirm Deletion</h3>
+        <p class="text-gray-300 mb-6">Are you sure you want to delete user <strong>{{ user.username }}</strong>? This action cannot be undone.</p>
+        
+        <div class="flex justify-end space-x-4">
+            <button onclick="closeDeleteModal()" class="bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors">
+                Cancel
+            </button>
+            <form method="POST" action="{{ url_for('admin.remove_user', user_id=user.id) }}" class="inline">
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-colors">
+                    Delete
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function confirmDelete(userId) {
+    document.getElementById('delete-modal').classList.remove('hidden');
+    document.getElementById('delete-modal').classList.add('flex');
+}
+
+function closeDeleteModal() {
+    document.getElementById('delete-modal').classList.add('hidden');
+    document.getElementById('delete-modal').classList.remove('flex');
+}
+
+
+</script>
+{% endblock %}

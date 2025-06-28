@@ -1,0 +1,224 @@
+{% extends "responsive_base.html" %}
+
+{% block title %}Browse Anime - AniFlix{% endblock %}
+
+{% block content %}
+<section class="pt-24 pb-16 bg-gray-900 min-h-screen">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <!-- Header -->
+        <div class="mb-8">
+            <h1 class="text-3xl font-bold text-white mb-4">Browse Anime</h1>
+            <p class="text-gray-400">Discover thousands of anime series and movies</p>
+        </div>
+
+        <!-- Filters -->
+        <div class="bg-gray-800 rounded-lg p-6 mb-8">
+            <form method="GET" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <!-- Search -->
+                <div>
+                    <label for="search" class="block text-sm font-medium text-gray-300 mb-2">Search</label>
+                    <input type="text" id="search" name="search" value="{{ search or '' }}" 
+                           placeholder="Search anime titles..."
+                           class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-red-500">
+                </div>
+
+                <!-- Genre Filter -->
+                <div>
+                    <label for="genre" class="block text-sm font-medium text-gray-300 mb-2">Genre</label>
+                    <select id="genre" name="genre" 
+                            class="w-full px-4 py-2 bg-gray-700 border border-gray-600 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-red-500">
+                        <option value="">All Genres</option>
+                        <option value="Action" {% if genre == 'Action' %}selected{% endif %}>Action</option>
+                        <option value="Adventure" {% if genre == 'Adventure' %}selected{% endif %}>Adventure</option>
+                        <option value="Comedy" {% if genre == 'Comedy' %}selected{% endif %}>Comedy</option>
+                        <option value="Drama" {% if genre == 'Drama' %}selected{% endif %}>Drama</option>
+                        <option value="Fantasy" {% if genre == 'Fantasy' %}selected{% endif %}>Fantasy</option>
+                        <option value="Horror" {% if genre == 'Horror' %}selected{% endif %}>Horror</option>
+                        <option value="Romance" {% if genre == 'Romance' %}selected{% endif %}>Romance</option>
+                        <option value="School" {% if genre == 'School' %}selected{% endif %}>School</option>
+                        <option value="Supernatural" {% if genre == 'Supernatural' %}selected{% endif %}>Supernatural</option>
+                    </select>
+                </div>
+
+                <!-- Submit Button -->
+                <div class="flex items-end">
+                    <button type="submit" 
+                            class="w-full bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-4 rounded-lg transition-colors">
+                        <i class="fas fa-search mr-2"></i>
+                        Filter
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Results Info -->
+        <div class="flex items-center justify-between mb-6">
+            <div class="text-gray-400">
+                {% if search or genre %}
+                    Showing {{ anime_list.items|length }} results
+                    {% if search %}for "{{ search }}"{% endif %}
+                    {% if genre %}in {{ genre }}{% endif %}
+                {% else %}
+                    Showing all anime ({{ anime_list.total }} total)
+                {% endif %}
+            </div>
+            <div class="text-gray-400 text-sm">
+                Page {{ anime_list.page }} of {{ anime_list.pages }}
+            </div>
+        </div>
+
+        <!-- Anime Grid -->
+        {% if anime_list.items %}
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-6 mb-8">
+            {% for anime in anime_list.items %}
+            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg transition-all duration-300 card-hover">
+                <div class="relative">
+                    <img src="{{ anime.thumbnail_url }}" alt="{{ anime.title }}" class="w-full h-64 object-cover">
+                    
+                    <!-- Overlay on Hover -->
+                    <div class="absolute inset-0 bg-black bg-opacity-0 hover:bg-opacity-70 transition-all duration-300 flex items-center justify-center opacity-0 hover:opacity-100">
+                        <div class="flex space-x-3">
+                            <a href="{{ url_for('content.anime_detail', content_id=anime.id) }}" 
+                               class="bg-red-600 hover:bg-red-700 text-white rounded-full p-3 inline-block transition-all">
+                                <i class="fas fa-play"></i>
+                            </a>
+                            {% if anime.trailer_url %}
+                            <button onclick="openTrailerModal('{{ anime.trailer_url }}')"
+                               class="bg-gray-600 hover:bg-gray-700 text-white rounded-full p-3 inline-block transition-all">
+                                <i class="fas fa-video"></i>
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <!-- Episode Count Badge -->
+                    <div class="absolute top-2 right-2 bg-black bg-opacity-70 text-white text-xs px-2 py-1 rounded">
+                        {{ anime.episodes|length }} EP
+                    </div>
+                    
+                    <!-- Featured Badge -->
+                    {% if anime.is_featured %}
+                        <div class="absolute top-2 left-2 bg-red-600 text-white text-xs px-2 py-1 rounded">
+                            FEATURED
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="p-4">
+                    <h3 class="font-semibold text-white mb-1 truncate">
+                        <a href="{{ url_for('content.anime_detail', content_id=anime.id) }}" class="hover:text-red-400">
+                            {{ anime.title }}
+                        </a>
+                    </h3>
+                    
+                    <div class="flex items-center text-gray-400 text-sm mb-2">
+                        <i class="fas fa-star text-yellow-400 mr-1"></i>
+                        <span>{{ "%.1f"|format(anime.rating) }}</span>
+                        <span class="mx-2">•</span>
+                        <span>{{ anime.year }}</span>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-1">
+                        {% for genre in anime.genre.split(', ')[:2] %}
+                            <span class="genre-tag bg-gray-700 text-gray-300 text-xs px-2 py-1 rounded hover:bg-red-500 hover:text-white transition-colors">
+                                {{ genre }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Pagination -->
+        {% if anime_list.pages > 1 %}
+        <div class="flex justify-center">
+            <nav class="flex items-center space-x-1">
+                <!-- Previous Page -->
+                {% if anime_list.has_prev %}
+                    <a href="{{ url_for('content.anime_list', page=anime_list.prev_num, search=search, genre=genre) }}" 
+                       class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg">
+                        <i class="fas fa-chevron-left"></i>
+                    </a>
+                {% else %}
+                    <span class="bg-gray-700 text-gray-500 px-3 py-2 rounded-lg cursor-not-allowed">
+                        <i class="fas fa-chevron-left"></i>
+                    </span>
+                {% endif %}
+
+                <!-- Page Numbers -->
+                {% for page_num in anime_list.iter_pages() %}
+                    {% if page_num %}
+                        {% if page_num != anime_list.page %}
+                            <a href="{{ url_for('content.anime_list', page=page_num, search=search, genre=genre) }}" 
+                               class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg">
+                                {{ page_num }}
+                            </a>
+                        {% else %}
+                            <span class="bg-red-600 text-white px-3 py-2 rounded-lg">
+                                {{ page_num }}
+                            </span>
+                        {% endif %}
+                    {% else %}
+                        <span class="text-gray-500 px-2">…</span>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Next Page -->
+                {% if anime_list.has_next %}
+                    <a href="{{ url_for('content.anime_list', page=anime_list.next_num, search=search, genre=genre) }}" 
+                       class="bg-gray-800 hover:bg-gray-700 text-white px-3 py-2 rounded-lg">
+                        <i class="fas fa-chevron-right"></i>
+                    </a>
+                {% else %}
+                    <span class="bg-gray-700 text-gray-500 px-3 py-2 rounded-lg cursor-not-allowed">
+                        <i class="fas fa-chevron-right"></i>
+                    </span>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+
+        {% else %}
+        <!-- No Results -->
+        <div class="text-center py-16">
+            <i class="fas fa-search text-6xl text-gray-600 mb-4"></i>
+            <h3 class="text-xl font-semibold text-white mb-2">No anime found</h3>
+            <p class="text-gray-400 mb-4">
+                {% if search or genre %}
+                    Try adjusting your search terms or filters
+                {% else %}
+                    No anime available at the moment
+                {% endif %}
+            </p>
+            {% if search or genre %}
+            <a href="{{ url_for('content.anime_list') }}" 
+               class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-lg inline-block">
+                Clear Filters
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-submit form on genre change
+document.getElementById('genre').addEventListener('change', function() {
+    this.form.submit();
+});
+
+// Handle genre tag clicks
+document.querySelectorAll('.genre-tag').forEach(tag => {
+    tag.addEventListener('click', function() {
+        const genre = this.textContent.trim();
+        const url = new URL(window.location);
+        url.searchParams.set('genre', genre);
+        url.searchParams.delete('page'); // Reset to first page
+        window.location.href = url.toString();
+    });
+});
+</script>
+{% endblock %}

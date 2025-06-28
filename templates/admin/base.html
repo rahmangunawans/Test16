@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Admin Panel - AniFlix{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0f1419;
+        }
+    </style>
+</head>
+<body class="bg-gray-900 text-white">
+    <div class="flex h-screen">
+        <!-- Sidebar -->
+        <div class="w-64 bg-gray-800 shadow-lg">
+            <div class="p-6">
+                <h2 class="text-xl font-bold text-white">Admin Panel</h2>
+            </div>
+            <nav class="mt-6">
+                <a href="{{ url_for('admin.admin_dashboard') }}" class="block px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white">
+                    <i class="fas fa-dashboard mr-3"></i>Dashboard
+                </a>
+                <a href="{{ url_for('admin.admin_content') }}" class="block px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white">
+                    <i class="fas fa-film mr-3"></i>Content
+                </a>
+                <a href="{{ url_for('admin.admin_users') }}" class="block px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white">
+                    <i class="fas fa-users mr-3"></i>Users
+                </a>
+                <a href="{{ url_for('admin.admin_analytics') }}" class="block px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white">
+                    <i class="fas fa-chart-line mr-3"></i>Analytics
+                </a>
+                <a href="{{ url_for('dashboard') }}" class="block px-6 py-3 text-gray-300 hover:bg-gray-700 hover:text-white">
+                    <i class="fas fa-arrow-left mr-3"></i>Back to Site
+                </a>
+            </nav>
+        </div>
+
+        <!-- Main Content -->
+        <div class="flex-1 overflow-auto">
+            <header class="bg-gray-800 shadow-sm">
+                <div class="px-6 py-4">
+                    <h1 class="text-2xl font-semibold text-white">{% block page_title %}Admin Panel{% endblock %}</h1>
+                </div>
+            </header>
+            
+            <main class="p-6">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="mb-4 p-4 rounded-lg {% if category == 'error' %}bg-red-100 text-red-700{% else %}bg-green-100 text-green-700{% endif %}">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                {% block content %}{% endblock %}
+            </main>
+            
+            <!-- Footer -->
+            <footer class="bg-black py-12 mt-12">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+                        <div>
+                            <h3 class="text-white text-lg font-semibold mb-4">AniFlix</h3>
+                            <ul class="space-y-2">
+                                <li><a href="#" class="text-gray-400 hover:text-white">About Us</a></li>
+                                <li><a href="#" class="text-gray-400 hover:text-white">Careers</a></li>
+                                <li><a href="#" class="text-gray-400 hover:text-white">News</a></li>
+                                <li><a href="#" class="text-gray-400 hover:text-white">Help Center</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="text-white text-lg font-semibold mb-4">Browse</h3>
+                            <ul class="space-y-2">
+                                <li><a href="{{ url_for('content.anime_list') }}" class="text-gray-400 hover:text-white">Anime</a></li>
+                                <li><a href="{{ url_for('content.movies_list') }}" class="text-gray-400 hover:text-white">Movies</a></li>
+                                <li><a href="{{ url_for('content.genres') }}" class="text-gray-400 hover:text-white">Genres</a></li>
+                                <li><a href="#" class="text-gray-400 hover:text-white">Popular</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="text-white text-lg font-semibold mb-4">Legal</h3>
+                            <ul class="space-y-2">
+                                <li><a href="#" class="text-gray-400 hover:text-white">Terms of Use</a></li>
+                                <li><a href="#" class="text-gray-400 hover:text-white">Privacy Policy</a></li>
+                                <li><a href="#" class="text-gray-400 hover:text-white">Cookie Policy</a></li>
+                                <li><a href="#" class="text-gray-400 hover:text-white">DMCA</a></li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h3 class="text-white text-lg font-semibold mb-4">Connect With Us</h3>
+                            <div class="flex space-x-4 mb-4">
+                                <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-facebook-f"></i></a>
+                                <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-twitter"></i></a>
+                                <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-instagram"></i></a>
+                                <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-discord"></i></a>
+                                <a href="#" class="text-gray-400 hover:text-white"><i class="fab fa-youtube"></i></a>
+                            </div>
+                            <p class="text-gray-400 text-sm">Download our mobile app:</p>
+                            <div class="flex space-x-2 mt-2">
+                                <a href="#" class="bg-gray-800 text-white px-3 py-1 rounded text-sm flex items-center">
+                                    <i class="fab fa-apple mr-1"></i> App Store
+                                </a>
+                                <a href="#" class="bg-gray-800 text-white px-3 py-1 rounded text-sm flex items-center">
+                                    <i class="fab fa-google-play mr-1"></i> Play Store
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="border-t border-gray-800 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center">
+                        <p class="text-gray-400 text-sm mb-4 md:mb-0">© 2023 AniFlix. All rights reserved.</p>
+                        <div class="flex space-x-6">
+                            <a href="#" class="text-gray-400 hover:text-white text-sm">Privacy</a>
+                            <a href="#" class="text-gray-400 hover:text-white text-sm">Terms</a>
+                            <a href="#" class="text-gray-400 hover:text-white text-sm">Sitemap</a>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    {% block scripts %}{% endblock %}
+</body>
+</html>

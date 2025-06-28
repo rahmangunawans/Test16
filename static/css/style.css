@@ -1,0 +1,457 @@
+/* Custom CSS for AniFlix */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+/* Navigation Priority Fix */
+nav {
+    z-index: 1000 !important;
+    position: fixed !important;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+}
+
+/* Ensure hero content stays below navigation */
+.hero-section,
+#hero-carousel {
+    z-index: 1 !important;
+}
+
+/* Add top padding to prevent navigation overlap */
+.hero-section {
+    padding-top: 4rem; /* 64px for navigation height */
+}
+
+/* Apply proper spacing to avoid navigation overlap */
+.pt-16, .pt-20 {
+    padding-top: 5rem !important; /* Override default pt-16/pt-20 for navigation clearance */
+}
+
+section[class*="pt-"], main, .main-content {
+    padding-top: 5rem !important;
+}
+
+/* Specific fix for anime detail page */
+section.bg-gray-900 {
+    padding-top: 5rem !important;
+}
+
+/* Ensure content doesn't get hidden behind navigation */
+body section:first-child,
+body main:first-child {
+    margin-top: 4rem;
+}
+
+/* Line clamp utility for text truncation */
+.line-clamp-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Responsive improvements */
+@media (max-width: 768px) {
+    .hero-section {
+        padding-top: 4rem; /* Same padding for mobile */
+    }
+    
+    main, .main-content, .hero-gradient, .content-detail {
+        margin-top: 4rem;
+    }
+    
+    /* Mobile button improvements */
+    .mobile-button-stack {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    /* Better mobile spacing */
+    .mobile-spacing {
+        padding: 1rem;
+    }
+    
+    /* Improved mobile text sizing */
+    .mobile-text {
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+    }
+}
+
+/* Mobile Navigation Fix */
+@media (max-width: 768px) {
+    nav {
+        background: rgba(0, 0, 0, 0.98) !important;
+        backdrop-filter: blur(15px);
+        -webkit-backdrop-filter: blur(15px);
+    }
+}
+
+.font-poppins {
+    font-family: 'Poppins', sans-serif;
+}
+
+/* Hero gradient background */
+.hero-gradient {
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+}
+
+/* Card hover effects dengan hardware acceleration */
+.card-hover {
+    transition: all 0.3s ease;
+    will-change: transform;
+    transform: translateZ(0);
+}
+
+.card-hover:hover {
+    transform: translateY(-10px) translateZ(0);
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
+}
+
+/* Optimasi carousel item */
+.carousel-item {
+    will-change: transform;
+    transform: translateZ(0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+/* Cursor states untuk carousel */
+.carousel {
+    cursor: grab;
+}
+
+.carousel:active {
+    cursor: grabbing;
+}
+
+/* Smooth transitions untuk semua elemen */
+* {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+/* Optimasi untuk webkit browsers */
+.carousel {
+    -webkit-transform: translateZ(0);
+    -webkit-backface-visibility: hidden;
+    -webkit-perspective: 1000px;
+}
+
+/* Genre tag hover effects */
+.genre-tag {
+    transition: all 0.3s ease;
+}
+
+.genre-tag:hover {
+    background-color: #e94560;
+    color: white;
+}
+
+/* Navigation link effects */
+.nav-link {
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -2px;
+    left: 0;
+    background-color: #e94560;
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+    width: 100%;
+}
+
+/* Mobile menu animation */
+.mobile-menu {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease-out;
+}
+
+.mobile-menu.open {
+    max-height: 500px;
+}
+
+/* Smooth scrolling untuk carousel */
+.carousel {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+    will-change: scroll-position;
+    transform: translateZ(0);
+}
+
+/* Hide scrollbar while maintaining functionality */
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Custom scrollbar for main content */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: #374151;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #ef4444;
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #dc2626;
+}
+
+/* Dashboard specific scrollbar */
+.dashboard-scroll::-webkit-scrollbar {
+    width: 6px;
+}
+
+.dashboard-scroll::-webkit-scrollbar-track {
+    background: #374151;
+    border-radius: 3px;
+}
+
+.dashboard-scroll::-webkit-scrollbar-thumb {
+    background: #ef4444;
+    border-radius: 3px;
+}
+
+.dashboard-scroll::-webkit-scrollbar-thumb:hover {
+    background: #dc2626;
+}
+
+/* Mobile optimizations */
+@media (max-width: 768px) {
+    .dashboard-scroll::-webkit-scrollbar {
+        width: 4px;
+    }
+    
+    .dashboard-scroll {
+        scrollbar-width: thin;
+    }
+}
+
+/* Carousel styling */
+.carousel {
+    scroll-snap-type: x mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.carousel-item {
+    scroll-snap-align: start;
+    flex-shrink: 0;
+}
+
+.scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+    display: none;
+}
+
+/* Video container responsive */
+.video-container {
+    position: relative;
+    padding-bottom: 56.25%;
+    height: 0;
+    overflow: hidden;
+}
+
+.video-container iframe,
+.video-container video {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* Form styling */
+.form-container {
+    transition: opacity 0.3s ease;
+}
+
+.form-container.hidden {
+    display: none;
+}
+
+/* Alert styling for flash messages */
+.alert-success {
+    background-color: #059669;
+}
+
+.alert-error {
+    background-color: #dc2626;
+}
+
+.alert-info {
+    background-color: #2563eb;
+}
+
+.alert-warning {
+    background-color: #d97706;
+}
+
+/* Loading spinner */
+.loading-spinner {
+    border: 2px solid #f3f3f3;
+    border-top: 2px solid #e94560;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Button loading state */
+.btn-loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.btn-loading::after {
+    content: '';
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    margin: auto;
+    border: 2px solid transparent;
+    border-top-color: #ffffff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+}
+
+/* Tooltip */
+.tooltip {
+    position: relative;
+    display: inline-block;
+}
+
+.tooltip .tooltiptext {
+    visibility: hidden;
+    width: 120px;
+    background-color: #374151;
+    color: #fff;
+    text-align: center;
+    border-radius: 6px;
+    padding: 5px 8px;
+    position: absolute;
+    z-index: 1;
+    bottom: 125%;
+    left: 50%;
+    margin-left: -60px;
+    opacity: 0;
+    transition: opacity 0.3s;
+    font-size: 12px;
+}
+
+.tooltip:hover .tooltiptext {
+    visibility: visible;
+    opacity: 1;
+}
+
+/* Progress bar */
+.progress-bar {
+    background-color: #374151;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    background-color: #e94560;
+    height: 4px;
+    transition: width 0.3s ease;
+}
+
+/* Responsive utilities */
+@media (max-width: 768px) {
+    .mobile-hidden {
+        display: none !important;
+    }
+    
+    .mobile-full {
+        width: 100% !important;
+    }
+    
+    .mobile-text-center {
+        text-align: center !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    .no-print {
+        display: none !important;
+    }
+}
+
+/* Focus styles for accessibility */
+button:focus,
+input:focus,
+select:focus,
+textarea:focus {
+    outline: 2px solid #e94560;
+    outline-offset: 2px;
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    .bg-gray-800 {
+        background-color: #000000 !important;
+    }
+    
+    .bg-gray-900 {
+        background-color: #000000 !important;
+    }
+    
+    .text-gray-300 {
+        color: #ffffff !important;
+    }
+    
+    .text-gray-400 {
+        color: #cccccc !important;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
